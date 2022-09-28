@@ -1,58 +1,74 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div class="translatable-editor">
+    <v-text-field
+          v-model.lazy="inputVal"
+          @change="submitTextChange()"
+          class="text-field"
+          placeholder="Enter text"
+          solo
+    ></v-text-field>
+    <v-select
+        class="select-lang"
+        v-model="selectedLang"
+        :items="langs"
+        @change="switchLang"
+        label="ru"
+        solo
+    ></v-select>
+    
   </div>
 </template>
 
 <script>
 export default {
   name: 'HelloWorld',
-  props: {
-    msg: String
+  data() {
+    return {
+      list : [
+        { lang: "ru", text: "Страница" },
+        { lang: "de", text: "Seite" },
+        { lang: "he", text: "עמוד" },
+      ],
+      langs: ["ru", "de", "en", "he"],
+      selectedLang: "ru",
+      inputVal: ""
+    }
+  },
+  watch: {
+
+  },
+  mounted() {
+    this.inputVal = this.list[0].text
+  },
+  methods: {
+    submitTextChange() {
+      const itemToUpdate = this.list.find(item => item.lang == this.selectedLang)
+      if(itemToUpdate == undefined) {
+        this.list = [...this.list.concat({lang: this.selectedLang, text: this.inputVal})]
+        return
+      }
+      this.list = this.list.map(item => item.lang == this.selectedLang ? {...item, text: this.inputVal} : item)
+    },
+    switchLang() {
+      const itemToUpdate  = this.list.find(item => item.lang == this.selectedLang)
+      this.inputVal = itemToUpdate != undefined ? itemToUpdate.text : ""
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+.translatable-editor {
+  width: 350px;
+  display: flex;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+.text-field {
+  
 }
-li {
+.select-lang {
+  /* width: 50px; */
+  flex: 0px;
   display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
 }
 </style>
